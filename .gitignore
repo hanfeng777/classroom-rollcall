@@ -1,0 +1,24 @@
+# 依赖
+node_modules/
+
+# 打包产物目录（便携版 exe 与解包目录）
+dist/
+
+# 打包好的 exe（体积过大，通过 GitHub Releases 发布，不进入源码仓库）
+*.exe
+
+# 本地构建的图标产物（由 build-icon.py 生成）
+assets/icon.ico
+assets/icon-256.png
+
+# 日志
+*.log
+npm-debug.log*
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/

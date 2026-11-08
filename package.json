@@ -1,0 +1,46 @@
+{
+  "name": "classroom-rollcall",
+  "version": "1.0.0",
+  "description": "课堂随机点名软件 - 支持随机抽取、重点关照、语音播报、表格导入",
+  "main": "main.js",
+  "author": "个人创作者",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test-logic.js",
+    "dist": "electron-builder --win portable dir"
+  },
+  "dependencies": {
+    "xlsx": "0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.workbuddy.classroomrollcall",
+    "productName": "课堂点名",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*",
+      "!dist/**/*"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        "portable",
+        "dir"
+      ],
+      "icon": "assets/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "ClassroomRollCall-${version}-portable.exe"
+    }
+  }
+}

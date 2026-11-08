@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:" />
+  <title>课堂点名</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ======================= 主界面 ======================= -->
+  <div id="view-main" class="view active">
+    <div id="main-stage">
+      <div id="main-content">
+        <div id="main-idle" class="idle-text">点击开始点名</div>
+      </div>
+    </div>
+    <button id="btn-new-lesson" class="icon-btn icon-btn-lesson" title="开启新一堂课" style="display:none">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M12 5v14M5 12h14"></path>
+      </svg>
+    </button>
+    <button id="btn-settings" class="icon-btn" title="设置" aria-label="设置">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ======================= 设置界面 ======================= -->
+  <div id="view-settings" class="view">
+    <header class="topbar">
+      <button id="btn-back-main" class="back-btn" title="返回">←</button>
+      <h1>设置</h1>
+      <span class="topbar-spacer"></span>
+    </header>
+    <div class="scroll-body">
+      <!-- 人名数据区 -->
+      <section class="card">
+        <div class="card-title">人名数据</div>
+        <div id="drop-zone" class="drop-zone">
+          <div class="drop-icon">⇪</div>
+          <div>将表格文件拖入此处</div>
+        </div>
+        <div class="data-row">
+          <button id="btn-import" class="btn btn-primary">导入表格文件</button>
+          <button id="btn-confirm" class="btn">确定</button>
+        </div>
+        <div class="data-row count-row">
+          <span class="count-label">当前人名数</span>
+          <span id="name-count" class="count-value">0</span>
+        </div>
+        <div class="data-row">
+          <button id="btn-manage" class="btn btn-ghost">查看 / 编辑名单</button>
+        </div>
+        <div id="import-msg" class="msg"></div>
+      </section>
+
+      <!-- 基础设置区 -->
+      <section class="card">
+        <div class="card-title">基础设置</div>
+        <div class="setting-row">
+          <span class="setting-info">
+            <span class="setting-title">生效方式</span>
+            <span class="setting-hint" id="mode-hint">按次数点名（默认）</span>
+          </span>
+          <select id="sel-mode" class="cycle-input select-input">
+            <option value="times">次数模式</option>
+            <option value="lesson">课时模式</option>
+          </select>
+        </div>
+        <label class="setting-row">
+          <span class="setting-info">
+            <span class="setting-title">语音播报</span>
+            <span class="setting-hint">5 人以上不播报</span>
+          </span>
+          <input type="checkbox" id="set-voice" class="switch" />
+        </label>
+        <label class="setting-row">
+          <span>人名池允许重复</span>
+          <input type="checkbox" id="set-allow-repeat" class="switch" />
+        </label>
+        <div class="setting-row">
+          <span>单次点名人数</span>
+          <div class="stepper">
+            <button id="count-minus" class="step-btn">−</button>
+            <input id="set-count" type="number" min="1" max="100" value="1" />
+            <button id="count-plus" class="step-btn">＋</button>
+          </div>
+        </div>
+        <label class="setting-row">
+          <span class="setting-info">
+            <span class="setting-title">降低重复率</span>
+            <span class="setting-hint" id="reduce-repeat-hint">开启后连续 N 次内不会出现重复人名</span>
+          </span>
+          <input type="checkbox" id="set-reduce-repeat" class="switch" />
+        </label>
+        <div class="data-row" id="reduce-repeat-count-row" style="display:none">
+          <span class="cycle-label">重复间隔次数</span>
+          <input id="set-reduce-repeat-count" type="number" min="1" max="50" class="cycle-input" value="3" />
+          <span class="hint">默认 3 次</span>
+        </div>
+        <div class="data-row" id="lesson-repeat-row" style="display:none">
+          <span class="cycle-label">课时数</span>
+          <select id="lesson-repeat-count" class="cycle-input select-input">
+            <option value="1">1 课时（本节课）</option>
+            <option value="0.5">0.5 课时（半小时）</option>
+            <option value="2">2 课时</option>
+            <option value="3">3 课时</option>
+            <option value="4">4 课时</option>
+            <option value="5">5 课时</option>
+          </select>
+        </div>
+        <label class="setting-row">
+          <span class="setting-info">
+            <span class="setting-title">防学生</span>
+            <span class="setting-hint">开启后修改重点关照或关闭本功能需输入密码</span>
+          </span>
+          <input type="checkbox" id="set-anti-student" class="switch" />
+        </label>
+      </section>
+
+      <!-- 高级设置入口 + 教程 -->
+      <section class="card">
+        <button id="btn-advanced" class="btn btn-block">高级设置（重点关照）→</button>
+        <button id="btn-tutorial" class="btn btn-block btn-ghost" style="margin-top:8px">使用教程</button>
+      </section>
+    </div>
+  </div>
+
+  <!-- ======================= 高级设置界面 ======================= -->
+  <div id="view-advanced" class="view">
+    <header class="topbar">
+      <button id="btn-back-settings" class="back-btn" title="返回">←</button>
+      <h1>高级设置</h1>
+      <span class="topbar-spacer"></span>
+    </header>
+    <div class="scroll-body">
+      <section class="card">
+        <div class="card-title">
+          <span>重点关照（仅在“允许重复”时生效）</span>
+          <span class="card-corner" id="att-cycle-hint"></span>
+        </div>
+        <p class="desc">
+          被关照的人名抽中的概率会更高！
+        </p>
+        <div class="data-row">
+          <span class="cycle-label">单人周期</span>
+          <input id="att-single-cycle" type="number" min="1" max="100" class="cycle-input" />
+          <span class="cycle-label">多人周期</span>
+          <input id="att-multi-cycle" type="number" min="1" max="100" class="cycle-input" />
+        </div>
+        <div class="cycle-hint-row">
+          <span class="setting-hint" id="cycle-hint"></span>
+        </div>
+        <div class="data-row">
+          <input id="att-search" type="text" class="text-input" placeholder="搜索人名…" />
+          <button id="att-add" class="btn btn-primary">添加关照</button>
+        </div>
+        <div id="att-candidates" class="candidate-list"></div>
+        <div id="att-list" class="attention-list"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ======================= 名单管理弹层 ======================= -->
+  <div id="modal-manage" class="modal-mask">
+    <div class="modal">
+      <div class="modal-head">
+        <span>名单管理</span>
+        <button id="modal-close" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="data-row">
+          <input id="manage-search" type="text" class="text-input" placeholder="查找人名…" />
+          <button id="manage-add" class="btn">新增</button>
+        </div>
+        <div id="manage-list" class="manage-list"></div>
+      </div>
+      <div class="modal-foot">
+        <button id="modal-done" class="btn btn-primary">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= 密码弹层 ======================= -->
+  <div id="modal-password" class="modal-mask">
+    <div class="modal">
+      <div class="modal-head">
+        <span id="pw-title">设置密码</span>
+        <button id="pw-close" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="desc" id="pw-desc">请设置防学生密码</p>
+        <input id="pw-input" type="password" class="text-input" placeholder="请输入密码" />
+        <div id="pw-msg" class="msg"></div>
+      </div>
+      <div class="modal-foot">
+        <button id="pw-cancel" class="btn">取消</button>
+        <button id="pw-confirm" class="btn btn-primary">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= 模式切换说明弹层 ======================= -->
+  <div id="modal-mode" class="modal-mask">
+    <div class="modal">
+      <div class="modal-head">
+        <span id="mode-title">切换生效方式</span>
+        <button id="mode-close" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="desc" id="mode-desc"></p>
+        <label class="setting-row">
+          <span>不再提醒</span>
+          <input type="checkbox" id="mode-no-remind" class="switch" />
+        </label>
+      </div>
+      <div class="modal-foot">
+        <button id="mode-cancel" class="btn">取消</button>
+        <button id="mode-confirm" class="btn btn-primary">确认切换</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= 新课时确认弹层 ======================= -->
+  <div id="modal-lesson" class="modal-mask">
+    <div class="modal">
+      <div class="modal-head">
+        <span>开启新一堂课</span>
+        <button id="lesson-close" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="desc">确定开启新一堂课吗？开启后将重新计时本课时的点名周期。</p>
+        <label class="setting-row" id="lesson-no-remind-row">
+          <span>不再提醒</span>
+          <input type="checkbox" id="lesson-no-remind" class="switch" />
+        </label>
+      </div>
+      <div class="modal-foot">
+        <button id="lesson-cancel" class="btn">取消</button>
+        <button id="lesson-confirm" class="btn btn-primary">开启新一课</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= 教程弹层 ======================= -->
+  <div id="modal-tutorial" class="modal-mask">
+    <div class="modal">
+      <div class="modal-head">
+        <span>使用教程</span>
+        <button id="tutorial-close" class="close-btn">×</button>
+      </div>
+      <div class="modal-body tutorial-body">
+        <div class="tutorial-content">
+          <h3>欢迎使用「课堂点名」</h3>
+          <p class="tut-sub">只需几步，即可开始课堂随机点名：</p>
+          <ol class="tut-list">
+            <li><b>① 导入学生名单</b>：点右下角「⚙ 设置」→「导入表格文件」，选择 Excel / CSV 文件（或直接把文件拖进设置页的虚线框）。表格里每个单元格放一个人名即可，位置不限。</li>
+            <li><b>② 开始点名</b>：回到主界面，点击屏幕任意位置开始。名字快速滚动约 1.5 秒后定格，被定格的即是被点到的学生；动画中再点一下可立即出结果。</li>
+            <li><b>③ 单次点名人数</b>：在「设置」里调整一次抽几个人（例如一次抽 3 人上台）。</li>
+            <li><b>④ 避免重复</b>：「人名池允许重复」默认开启（同一人可能被再次抽到）。若想一轮内不重复，可关闭它；「降低重复率」开启后，连续若干次内不会重复出现同一人。</li>
+            <li><b>⑤ 重点关照</b>：在「设置 → 高级设置」里搜索并添加需要多关注的学生，他们被抽中的概率会更高，且每个周期内必定抽中。</li>
+            <li><b>⑥ 语音播报</b>：在「设置」里开启「语音播报」，抽中人数 ≤ 5 时自动朗读人名（需系统已装中文语音）。</li>
+            <li><b>⑦ 课时模式（可选）</b>：在「生效方式」里选择「课时模式」，可按一整节课为周期，适合按课时统计去重。开启新一堂课有两种方式：每次打开软件时会询问，或随时点击主界面右下角「＋」图标开启。</li>
+          </ol>
+          <p class="tut-tip">小提示：右下角 ⚙ 图标进入设置，左上角「←」返回主界面。</p>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button id="tutorial-done" class="btn btn-primary">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="logic.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
